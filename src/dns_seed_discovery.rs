@@ -13,10 +13,10 @@ impl DnsSeedDiscovery {
     ) -> Vec<String> {
         match params {
             crate::config::NetworkParams::Mainnet { .. } => vec![
-                // Tondi官方DNS种子服务器（活跃的v7节点）
+                // Tondi Official DNS seeders
                 "seeder.tondid.net".to_string(),
                 "seeder.tondinet.org".to_string(),
-                // 主要DNS种子服务器（已验证可用）
+                // Main DNS seeders
                 "seeder1.tondid.net".to_string(),
                 "seeder2.tondid.net".to_string(),
                 "seeder3.tondid.net".to_string(),
