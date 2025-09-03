@@ -14,23 +14,23 @@ impl DnsSeedDiscovery {
         match params {
             crate::config::NetworkParams::Mainnet { .. } => vec![
                 // Tondi Official DNS seeders
-                "seeder.tondid.net".to_string(),
+                "seeder.tondi.org".to_string(),
                 "seeder.tondinet.org".to_string(),
                 // Main DNS seeders
-                "seeder1.tondid.net".to_string(),
-                "seeder2.tondid.net".to_string(),
-                "seeder3.tondid.net".to_string(),
-                "seeder4.tondid.net".to_string(),
-                "tondidns.tondicalc.net".to_string(),
-                "n-mainnet.tondi.ws".to_string(),
+                "seeder1.tondi.org".to_string(),
+                "seeder2.tondi.org".to_string(),
+                "seeder3.tondi.org".to_string(),
+                "seeder4.tondi.org".to_string(),
+                "tondidns.tondi.org".to_string(),
+                "n-mainnet.tondi.org".to_string(),
             ],
             crate::config::NetworkParams::Testnet { suffix, .. } => vec![
                 // For testnet, we'll use mainnet seeders as fallback
                 // since testnet seeders seem to be unavailable
                 format!("seed{}.testnet.tondi.org", suffix),
                 // Fallback to mainnet seeders for testnet
-                "seeder1.tondid.net".to_string(),
-                "seeder2.tondid.net".to_string(),
+                "seeder1.tondi.org".to_string(),
+                "seeder2.tondi.org".to_string(),
             ],
         }
     }
