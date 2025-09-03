@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  tondi_seeder:
+    build: .
+    container_name: tondi_seeder
+    restart: unless-stopped
+    ports:
+      - "5354:5354"  # DNS service port (new default)
+      - "3737:3737"  # gRPC/HTTP API port (new default)
+      - "8080:8080"  # Profiling port (optional)
+    volumes:
+      - tondi_seeder_data:/app/data
+      - tondi_seeder_logs:/app/logs
+    environment:
+      - RUST_LOG=tondi_seeder=info
+    command: >
+      --host seed.example.com
+      --nameserver ns.example.com
+      --seeder 127.0.0.1:16111
+      --listen 0.0.0.0:5354
+      --grpc-listen 0.0.0.0:3737
+      --profile 8080
+      --threads 8
+      --log-level info
+      --app-dir /app/data
+    networks:
+      - tondi_seeder_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3737/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Testnet version (optional)
+  tondi_seeder-testnet:
+    build: .
+    container_name: tondi_seeder-testnet
+    restart: unless-stopped
+    ports:
+      - "5355:5354"  # Use different port to avoid conflicts
+      - "3738:3737"
+      - "8081:8080"
+    volumes:
+      - tondi_seeder_testnet_data:/app/data
+      - tondi_seeder_testnet_logs:/app/logs
+    environment:
+      - RUST_LOG=tondi_seeder=info
+    command: >
+      --host seed-testnet.example.com
+      --nameserver ns-testnet.example.com
+      --seeder 127.0.0.1:16110
+      --testnet
+      --net-suffix 1
+      --listen 0.0.0.0:5354
+      --grpc-listen 0.0.0.0:3737
+      --profile 8080
+      --threads 4
+      --log-level info
+      --app-dir /app/data
+    networks:
+      - tondi_seeder_net
+    profiles:
+      - testnet
+
+volumes:
+  tondi_seeder_data:
+    driver: local
+  tondi_seeder_logs:
+    driver: local
+  tondi_seeder_testnet_data:
+    driver: local
+  tondi_seeder_testnet_logs:
+    driver: local
+
+networks:
+  tondi_seeder_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

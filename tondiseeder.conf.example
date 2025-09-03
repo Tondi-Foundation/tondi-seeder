@@ -1,0 +1,322 @@
+# ============================================================================
+# Tondi DNS Seeder Configuration Example
+# ============================================================================
+# This file demonstrates ALL available configuration options with detailed
+# explanations and usage examples. Copy this file to 'tondi_seeder.conf' and
+# modify as needed for your setup.
+#
+# Quick Start:
+# 1. Copy this file: cp tondi_seeder.conf.example tondi_seeder.conf
+# 2. Edit basic settings (host, nameserver, app_dir)  
+# 3. Run: ./tondi_seeder --config tondi_seeder.conf
+#
+# For production use, ensure:
+# - Set proper DNS hostname and nameserver
+# - Configure appropriate app_dir path
+# - Adjust thread count for your hardware
+# - Set optimal log level for monitoring
+# ============================================================================
+
+# ============================================================================
+# BASIC CONFIGURATION (Required Settings)
+# ============================================================================
+
+# Your DNS hostname that will serve peer addresses
+# This should be a valid domain name pointing to your server
+# Example: "seed.example.com", "tondi-seed.myserver.net"
+host = "seed.tondi.org"
+
+# Your authoritative nameserver that handles DNS queries
+# Must be configured to delegate queries for 'host' to this seeder
+# Example: "ns1.example.com", "nameserver.myserver.net"
+nameserver = "ns1.tondi.org"
+
+# DNS server listen address and port
+# Format: "IP:PORT" or ":PORT" for all interfaces
+# Common values:
+# - "0.0.0.0:8354" - Listen on all interfaces, port 8354
+# - "127.0.0.1:5354" - Listen only on localhost, port 5354
+# - ":53" - Listen on all interfaces, standard DNS port (requires root)
+listen = "0.0.0.0:8354"
+
+# gRPC API listen address for monitoring and control
+# Used for metrics, health checks, and management commands
+# Format: "IP:PORT"
+# Common values:
+# - "0.0.0.0:6737" - Listen on all interfaces (for remote monitoring)
+# - "127.0.0.1:3737" - Listen only on localhost (more secure)
+grpc_listen = "0.0.0.0:6737"
+
+# Application data directory where peers.json and logs are stored
+# Supports ~ expansion for home directory
+# Examples:
+# - "~/.tondi_seeder" - User home directory
+# - "./data/async_test" - Relative to current directory
+# - "/var/lib/tondi_seeder" - Absolute system path
+app_dir = "./data/async_test"
+
+# ============================================================================
+# THREADING AND PERFORMANCE
+# ============================================================================
+
+# Number of crawler threads for peer discovery
+# Recommended values:
+# - 4-8 threads for most servers
+# - 8-16 threads for high-performance servers
+# - 2-4 threads for resource-constrained environments
+# Valid range: 1-32
+threads = 8
+
+# ============================================================================
+# NETWORK PARAMETERS
+# ============================================================================
+
+# Tondi network configuration
+# For mainnet: use default values (testnet = false)
+# For testnet: set testnet = true and specify suffix
+testnet = false
+
+# Testnet network suffix (only used when testnet = true)
+# Currently only testnet-11 (suffix = 11) is supported
+# Valid values: 0 (for mainnet), 11 (for testnet-11)
+net_suffix = 0
+
+# Protocol version requirements
+# Minimum protocol version that peers must support
+# Usually 0 or 1 for current Tondi versions
+min_proto_ver = 1
+
+# Minimum user agent version requirement
+# Filters out older client versions
+# Format: semantic version string like "0.12.0"
+# Leave commented to accept all versions
+min_ua_ver = "0.12.0"
+
+# ============================================================================
+# PEER DISCOVERY SETTINGS
+# ============================================================================
+
+# Known peer seeds for initial discovery
+# Comma-separated list of IP:PORT or hostname:PORT addresses
+# Leave empty to use built-in DNS seeders (recommended)
+# Example: "192.168.1.100:16111,tondi-node.example.com:16111"
+known_peers = ""
+
+# Default seeder for initial bootstrapping  
+# Single IP:PORT or hostname:PORT address
+# Leave empty to use built-in DNS seeders (recommended)
+# Example: "bootstrap.tondi.org:16111"
+seeder = ""
+
+# Alternative names for the above settings (Go version compatibility)
+# You can use either the names above or these aliases:
+# peers = ""           # Same as known_peers
+# default_seeder = ""  # Same as seeder
+
+# ============================================================================
+# LOGGING CONFIGURATION
+# ============================================================================
+
+# Log level controls verbosity of output
+# Available levels (from most to least verbose):
+# - "trace" - Extremely detailed debugging information
+# - "debug" - Detailed debugging information  
+# - "info"  - General information messages (recommended)
+# - "warn"  - Warning messages only
+# - "error" - Error messages only
+log_level = "info"
+
+# Whether to disable log files completely
+# true = only console output, false = console + file logging
+no_log_files = false
+
+# Error log file path (for error-level messages)
+# Leave empty to disable separate error logging
+# Example: "logs/tondi_seeder_error.log", "/var/log/tondi_seeder/error.log"
+error_log_file = "logs/tondi_seeder_error.log"
+
+# ============================================================================
+# ADVANCED LOGGING & ROTATION
+# ============================================================================
+# Note: These settings control the new log rotation system
+# They provide advanced features like compression and automatic cleanup
+
+[advanced_logging]
+# Log rotation strategy determines when log files are rotated
+# Available strategies:
+# - "daily"  - Rotate logs daily at midnight UTC (recommended for production)
+# - "hourly" - Rotate logs every hour (for high-volume debugging)
+# - "size"   - Rotate when file reaches max_file_size_mb
+# - "hybrid" - Daily rotation + size limit (best for most cases)
+rotation_strategy = "daily"
+
+# Time-based rotation interval (hours) - only for hourly rotation
+# Examples: 1 = every hour, 6 = every 6 hours, 24 = daily
+# Ignored for other rotation strategies
+rotation_interval_hours = 24
+
+# Log file size limits (MB)
+# Files will be rotated when they exceed this size
+# Recommended: 50-200 MB depending on disk space
+max_file_size_mb = 100
+
+# Retention policy - number of old log files to keep
+# Older files are automatically deleted to save disk space
+# Recommended: 7-30 files depending on storage capacity
+max_rotated_files = 10
+
+# Compression settings - compress rotated logs to save disk space
+# Highly recommended for production (saves 70-80% disk space)
+compress_rotated_logs = true
+
+# Compression level (1-9)
+# 1 = fastest compression, larger files
+# 9 = maximum compression, smaller files, slower
+# 6 = good balance of speed and compression ratio (recommended)
+compression_level = 6
+
+# Log file metadata - whether to include system info in filenames
+include_hostname = true  # Include hostname in log filenames
+include_pid = true       # Include process ID in log filenames
+
+# Advanced buffering for high-performance logging
+# Enable buffering to reduce I/O overhead (recommended for production)
+enable_buffering = true
+
+# Buffer size in bytes
+# Larger buffers = better performance but more memory usage
+# 64KB (65536) is optimal for most cases
+buffer_size_bytes = 65536
+
+# File monitoring - monitor log file health and rotation status
+enable_file_monitoring = true
+
+# How often to check log file status (seconds)
+# 300 seconds (5 minutes) is usually sufficient
+file_monitoring_interval = 300
+
+# Custom log format (optional)
+# Available placeholders: {timestamp}, {level}, {target}, {message}, {file}, {line}
+# Leave commented to use default format
+# custom_format = "{timestamp} [{level}] {target}: {message}"
+
+# ============================================================================
+# PERFORMANCE MONITORING
+# ============================================================================
+# Note: These settings control system monitoring and metrics collection
+
+[monitoring]
+# Enable comprehensive performance monitoring
+# Recommended: true for production, false for minimal resource usage
+enabled = true
+
+# How often to collect and log performance metrics (seconds)
+# 60 seconds provides good balance of detail vs. overhead
+interval_seconds = 60
+
+# Resource monitoring options - what metrics to collect
+collect_memory_stats = true    # RAM usage tracking
+collect_cpu_stats = true       # CPU utilization tracking  
+collect_network_stats = true   # Network I/O statistics
+collect_disk_stats = true      # Disk I/O statistics
+
+# Historical data retention
+# Number of metric snapshots to keep in memory for trending
+# 1000 points = ~16 hours at 60-second intervals
+max_history_points = 1000
+
+# HTTP metrics endpoint for external monitoring
+# Expose metrics on HTTP endpoint for Prometheus/Grafana integration
+http_metrics = false
+
+# Port for HTTP metrics endpoint
+# Standard Prometheus port is 9090, but use any available port
+# Only used if http_metrics = true
+http_metrics_port = 9090
+
+# ============================================================================
+# DEBUGGING AND PROFILING
+# ============================================================================
+
+# Profiling port (0 to disable)
+# Enables Go-style pprof profiling on specified port
+# Useful for performance analysis and debugging
+# Recommended: 0 for production, 6060 for development
+# Valid range: 0 (disabled), 1024-65535
+profile = "0"
+
+# ============================================================================
+# CONFIGURATION EXAMPLES FOR DIFFERENT ENVIRONMENTS
+# ============================================================================
+
+# Example 1: High-Performance Production Setup
+# Uncomment and modify these settings for a high-performance server:
+#
+# threads = 16
+# rotation_strategy = "hybrid"  
+# max_file_size_mb = 200
+# max_rotated_files = 30
+# compression_level = 9
+# http_metrics = true
+# http_metrics_port = 9090
+
+# Example 2: Development/Testing Setup  
+# Uncomment and modify these settings for development:
+#
+# log_level = "debug"
+# rotation_strategy = "size"
+# max_file_size_mb = 10
+# max_rotated_files = 5
+# compress_rotated_logs = false
+# profile = "6060"
+
+# Example 3: Resource-Constrained Environment
+# Uncomment and modify these settings for limited resources:
+#
+# threads = 4
+# no_log_files = true  # Console only
+# monitoring.enabled = false
+# advanced_logging.enable_buffering = false
+
+# Example 4: Testnet Configuration
+# Uncomment and modify these settings for testnet:
+#
+# testnet = true
+# net_suffix = 11
+# host = "testnet-seed.example.com"
+# nameserver = "ns1.example.com"
+# app_dir = "./data/testnet"
+
+# ============================================================================
+# CONFIGURATION TIPS AND BEST PRACTICES
+# ============================================================================
+
+# Performance Tips:
+# 1. Set threads = number of CPU cores for optimal performance
+# 2. Use hybrid log rotation for production environments
+# 3. Enable log compression to save disk space
+# 4. Monitor memory usage with collect_memory_stats = true
+# 5. Use SSD storage for app_dir for better I/O performance
+
+# Security Tips:
+# 1. Use 127.0.0.1 for grpc_listen if no remote monitoring needed
+# 2. Set profile = "0" in production to disable profiling
+# 3. Use firewall rules to restrict access to DNS and gRPC ports
+# 4. Regularly update to latest version for security patches
+
+# Monitoring Tips:
+# 1. Enable http_metrics for Prometheus integration
+# 2. Set appropriate log_level (info for production, debug for troubleshooting)
+# 3. Monitor log rotation and disk usage regularly
+# 4. Set up alerts for connection failures and high resource usage
+
+# Troubleshooting Tips:
+# 1. Use log_level = "debug" for detailed troubleshooting
+# 2. Check error_log_file for specific error messages
+# 3. Enable profile port for performance analysis
+# 4. Verify DNS resolution and network connectivity
+# 5. Check app_dir permissions and disk space
+
+# ============================================================================
+# END OF CONFIGURATION
+# ============================================================================

@@ -1,0 +1,55 @@
+# Temp files
+*~
+testdata
+
+# Databases
+tondid.db
+*-shm
+*-wal
+
+# Log files
+*.log
+logs/
+
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+vendor
+data/
+logs/
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.exe
+ 
+# IDE
+.idea
+.vscode
+debug
+debug.test
+__debug_bin
+
+# CI
+version.txt
+coverage.txt
+
+testdbs/
+coverage.tmp
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+*.pdb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
