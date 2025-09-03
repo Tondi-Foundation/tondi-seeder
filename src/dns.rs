@@ -1,4 +1,4 @@
-use crate::errors::{KaseederError, Result};
+use crate::errors::{TondiSeederError, Result};
 use crate::manager::AddressManager;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::str::FromStr;
@@ -53,7 +53,7 @@ impl DnsServer {
         let socket_addr: SocketAddr = self
             .listen
             .parse()
-            .map_err(|_| KaseederError::Dns(format!("Invalid listen address: {}", self.listen)))?;
+            .map_err(|_| TondiSeederError::Dns(format!("Invalid listen address: {}", self.listen)))?;
 
         // Use tokio async UDP socket
         let socket = if socket_addr.is_ipv4() {
@@ -131,19 +131,19 @@ impl DnsServer {
             Ok(msg) => msg,
             Err(e) => {
                 warn!("{}: invalid DNS message: {}", src_addr, e);
-                return Err(KaseederError::Dns(format!("Invalid DNS message: {}", e)));
+                return Err(TondiSeederError::Dns(format!("Invalid DNS message: {}", e)));
             }
         };
 
         // Validate message type
         if request.header().message_type() != MessageType::Query {
             warn!("{}: not a query message", src_addr);
-            return Err(KaseederError::Dns("Not a query message".to_string()));
+            return Err(TondiSeederError::Dns("Not a query message".to_string()));
         }
 
         if request.header().op_code() != OpCode::Query {
             warn!("{}: not a standard query", src_addr);
-            return Err(KaseederError::Dns("Not a standard query".to_string()));
+            return Err(TondiSeederError::Dns("Not a standard query".to_string()));
         }
 
         // Get the first query from the message (like Go version)
@@ -151,7 +151,7 @@ impl DnsServer {
             Some(q) => q,
             None => {
                 warn!("{}: no query in DNS request", src_addr);
-                return Err(KaseederError::Dns("No query in DNS request".to_string()));
+                return Err(TondiSeederError::Dns("No query in DNS request".to_string()));
             }
         };
 
@@ -163,7 +163,7 @@ impl DnsServer {
         // Validate domain name (like Go version)
         if !Self::is_our_domain(domain_name, hostname) {
             warn!("{}: invalid name: {}", src_addr, domain_name);
-            return Err(KaseederError::Dns(format!("Invalid name: {}", domain_name)));
+            return Err(TondiSeederError::Dns(format!("Invalid name: {}", domain_name)));
         }
 
         // Extract subnetwork ID (like Go version)

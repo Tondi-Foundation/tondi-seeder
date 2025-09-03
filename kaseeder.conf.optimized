@@ -1,4 +1,4 @@
-# Kaseeder 优化配置文件
+# TondiSeeder 优化配置文件
 # 专为高性能节点发现优化
 
 host = "seed.tondi.org"

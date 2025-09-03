@@ -18,6 +18,6 @@ pub mod version;
 
 pub use config::Config;
 pub use constants::*;
-pub use errors::{KaseederError, Result};
+pub use errors::{TondiSeederError, Result};
 pub use tondi_protocol::*;
 pub use types::*;

@@ -1,8 +1,8 @@
-# Kaseeder - Tondi DNS Seeder in Rust
+# TondiSeeder - Tondi DNS Seeder in Rust
 
 **🚀 Protocol Version 7 Ready - Following Latest Tondi Mainnet Protocol**
 
-Kaseeder is fully aligned with the latest Tondi mainnet protocol (Crescendo v7) and **only connects to active, block-syncing v7 nodes**. We do not support deprecated v6 nodes as they cannot sync Crescendo blocks and are being phased out from the mainnet.
+TondiSeeder is fully aligned with the latest Tondi mainnet protocol (Crescendo v7) and **only connects to active, block-syncing v7 nodes**. We do not support deprecated v6 nodes as they cannot sync Crescendo blocks and are being phased out from the mainnet.
 
 **Key Protocol Features:**
 - ✅ **Protocol Version 7**: Full Crescendo compatibility
@@ -14,9 +14,9 @@ Kaseeder is fully aligned with the latest Tondi mainnet protocol (Crescendo v7) 
 
 Tondi DNS Seeder exposes a list of known peers to any new peer joining the Tondi network via the DNS protocol. This is the Rust implementation, fully aligned with the Go version with enhanced performance optimizations and **latest protocol compliance**.
 
-When Kaseeder is started for the first time, it will connect to the tondid node specified with the `--seeder` flag and listen for `addr` messages. These messages contain the IPs of all peers known by the node. Kaseeder will then connect to each of these peers, listen for their `addr` messages, and continue to traverse the network in this fashion. Kaseeder maintains a list of all known peers and periodically checks that they are online and available. The list is stored on disk in a json file, so on subsequent start ups the tondid node specified with `--seeder` does not need to be online.
+When TondiSeeder is started for the first time, it will connect to the tondid node specified with the `--seeder` flag and listen for `addr` messages. These messages contain the IPs of all peers known by the node. TondiSeeder will then connect to each of these peers, listen for their `addr` messages, and continue to traverse the network in this fashion. TondiSeeder maintains a list of all known peers and periodically checks that they are online and available. The list is stored on disk in a json file, so on subsequent start ups the tondid node specified with `--seeder` does not need to be online.
 
-When Kaseeder is queried for node information, it responds with details of a random selection of the reliable nodes it knows about.
+When TondiSeeder is queried for node information, it responds with details of a random selection of the reliable nodes it knows about.
 
 This project is currently under active development and is in Beta state with production-ready performance optimizations.
 
@@ -278,7 +278,7 @@ Available options:
 
 ### DNS Configuration
 
-To create a working setup where the Kaseeder can provide IPs to tondid instances, set the following DNS records:
+To create a working setup where the TondiSeeder can provide IPs to tondid instances, set the following DNS records:
 
 ```
 NAME                        TYPE        VALUE
@@ -368,7 +368,7 @@ The Rust version maintains the same architecture as the Go version with performa
 ### Protocol Version 7 Issues
 
 1. **Protocol version mismatch warnings**: These are normal and expected - we force v7 while some nodes may still report v6
-2. **v6 node connections**: Kaseeder automatically filters out deprecated v6 nodes
+2. **v6 node connections**: TondiSeeder automatically filters out deprecated v6 nodes
 3. **Handshake failures**: Some older nodes may not support v7 - this is expected behavior
 
 ### Common Issues

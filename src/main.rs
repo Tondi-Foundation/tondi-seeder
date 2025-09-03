@@ -2,7 +2,7 @@ use clap::Parser;
 use tondi_seeder::config::{CliOverrides, Config};
 use tondi_seeder::crawler::Crawler;
 use tondi_seeder::dns::DnsServer;
-use tondi_seeder::errors::{KaseederError, Result};
+use tondi_seeder::errors::{TondiSeederError, Result};
 use tondi_seeder::grpc::GrpcServer;
 use tondi_seeder::tondi_protocol::create_consensus_config;
 use tondi_seeder::logging::LoggingConfig;
@@ -208,7 +208,7 @@ async fn main() -> Result<()> {
     let profiling_server = if let Some(ref profile_port) = config.profile {
         let port: u16 = profile_port
             .parse()
-            .map_err(|_| KaseederError::InvalidConfigValue {
+            .map_err(|_| TondiSeederError::InvalidConfigValue {
                 field: "profile".to_string(),
                 value: profile_port.clone(),
                 expected: "valid port number".to_string(),

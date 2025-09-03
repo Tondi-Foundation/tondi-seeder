@@ -1,4 +1,4 @@
-use crate::errors::{KaseederError, Result};
+use crate::errors::{TondiSeederError, Result};
 use crate::manager::AddressManager;
 use crate::types::NetAddress;
 use std::sync::Arc;
@@ -41,7 +41,7 @@ impl GrpcServer {
             .add_service(server)
             .serve(addr)
             .await
-            .map_err(|e| KaseederError::Grpc(format!("gRPC server error: {}", e)))?;
+            .map_err(|e| TondiSeederError::Grpc(format!("gRPC server error: {}", e)))?;
 
         Ok(())
     }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Check Kaseeder DNS Seeder Status Script
+# Check TondiSeeder DNS Seeder Status Script
 # This script checks the status of the running DNS seeder
 
 set -e

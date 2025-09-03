@@ -1,4 +1,4 @@
-use crate::errors::{KaseederError, Result};
+use crate::errors::{TondiSeederError, Result};
 use crate::types::NetAddress;
 use tondi_consensus_core::config::Config as ConsensusConfig;
 use tondi_core::time::unix_now;
@@ -18,12 +18,12 @@ use tracing::{debug, info, warn};
 use uuid::Uuid;
 
 /// DNS seeder connection initializer, specifically for address collection
-pub struct KaseederConnectionInitializer {
+pub struct TondiSeederConnectionInitializer {
     version_message: VersionMessage,
     addresses_tx: mpsc::Sender<Vec<NetAddress>>,
 }
 
-impl KaseederConnectionInitializer {
+impl TondiSeederConnectionInitializer {
     pub fn new(
         consensus_config: &ConsensusConfig,
         addresses_tx: mpsc::Sender<Vec<NetAddress>>,
@@ -48,7 +48,7 @@ impl KaseederConnectionInitializer {
 }
 
 #[async_trait]
-impl ConnectionInitializer for KaseederConnectionInitializer {
+impl ConnectionInitializer for TondiSeederConnectionInitializer {
     async fn initialize_connection(
         &self,
         router: Arc<Router>,
@@ -139,7 +139,7 @@ impl ConnectionInitializer for KaseederConnectionInitializer {
     }
 }
 
-impl KaseederConnectionInitializer {
+impl TondiSeederConnectionInitializer {
     async fn handle_addresses_response(
         mut all_messages_receiver: IncomingRoute,
         addresses_tx: mpsc::Sender<Vec<NetAddress>>,
@@ -251,7 +251,7 @@ impl DnsseedNetAdapter {
     pub fn new(consensus_config: Arc<ConsensusConfig>) -> Result<Self> {
         let (addresses_tx, addresses_rx) = mpsc::channel(100);
 
-        let initializer = Arc::new(KaseederConnectionInitializer::new(
+        let initializer = Arc::new(TondiSeederConnectionInitializer::new(
             &consensus_config,
             addresses_tx,
         ));
@@ -291,7 +291,7 @@ impl DnsseedNetAdapter {
                 Err(e) => {
                     retry_count += 1;
                     if retry_count >= max_retries {
-                        return Err(KaseederError::ConnectionFailed(format!(
+                        return Err(TondiSeederError::ConnectionFailed(format!(
                             "Failed to connect to peer {} after {} retries: {}",
                             address, max_retries, e
                         )));
@@ -330,40 +330,40 @@ impl DnsseedNetAdapter {
                         if proto_err.to_string().contains("version")
                             || proto_err.to_string().contains("protocol")
                         {
-                            KaseederError::ProtocolVersionMismatch(format!(
+                            TondiSeederError::ProtocolVersionMismatch(format!(
                                 "Protocol version mismatch connecting to {}: {}",
                                 address, proto_err
                             ))
                         } else {
-                            KaseederError::Protocol(format!(
+                            TondiSeederError::Protocol(format!(
                                 "Protocol error connecting to {}: {}",
                                 address, proto_err
                             ))
                         }
                     }
-                    tondi_p2p_lib::ConnectionError::NoAddress => KaseederError::InvalidAddress(
+                    tondi_p2p_lib::ConnectionError::NoAddress => TondiSeederError::InvalidAddress(
                         format!("Invalid address format for {}: {}", address, e),
                     ),
                     tondi_p2p_lib::ConnectionError::IoError(ref io_err) => {
                         // Check if it's a connection refused or timeout
                         if io_err.kind() == std::io::ErrorKind::ConnectionRefused {
-                            KaseederError::PeerUnavailable(format!(
+                            TondiSeederError::PeerUnavailable(format!(
                                 "Peer {} refused connection: {}",
                                 address, io_err
                             ))
                         } else if io_err.kind() == std::io::ErrorKind::TimedOut {
-                            KaseederError::NetworkTimeout(format!(
+                            TondiSeederError::NetworkTimeout(format!(
                                 "Connection timeout to {}: {}",
                                 address, io_err
                             ))
                         } else {
-                            KaseederError::Io(std::io::Error::new(
+                            TondiSeederError::Io(std::io::Error::new(
                                 std::io::ErrorKind::Other,
                                 format!("I/O error connecting to {}: {}", address, e),
                             ))
                         }
                     }
-                    _ => KaseederError::ConnectionFailed(format!(
+                    _ => TondiSeederError::ConnectionFailed(format!(
                         "Connection failed to {}: {}",
                         address, e
                     )),
@@ -538,13 +538,13 @@ impl DnsseedNetAdapter {
 
                 // Provide specific error analysis
                 let analysis = match e {
-                    KaseederError::Protocol(_) => {
+                    TondiSeederError::Protocol(_) => {
                         "Protocol compatibility issue - node may be running different version"
                     }
-                    KaseederError::Io(_) => {
+                    TondiSeederError::Io(_) => {
                         "Network I/O error - check firewall, routing, or node availability"
                     }
-                    KaseederError::ConnectionFailed(_) => {
+                    TondiSeederError::ConnectionFailed(_) => {
                         "General connection failure - node may be offline or overloaded"
                     }
                     _ => "Unknown error type",

@@ -1,4 +1,4 @@
-use crate::errors::{KaseederError, Result};
+use crate::errors::{TondiSeederError, Result};
 use crate::logging::LoggingConfig;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -121,7 +121,7 @@ impl Config {
     pub fn validate(&self) -> Result<()> {
         // Validate hostname
         if self.host.is_empty() {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "host".to_string(),
                 value: self.host.clone(),
                 expected: "non-empty hostname".to_string(),
@@ -130,7 +130,7 @@ impl Config {
 
         // Validate nameserver
         if self.nameserver.is_empty() {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "nameserver".to_string(),
                 value: self.nameserver.clone(),
                 expected: "non-empty nameserver".to_string(),
@@ -145,7 +145,7 @@ impl Config {
 
         // Validate thread count (aligned with Go version: 1-32)
         if self.threads == 0 || self.threads > 32 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "threads".to_string(),
                 value: self.threads.to_string(),
                 expected: "1-32".to_string(),
@@ -157,7 +157,7 @@ impl Config {
         // Validate testnet suffix (aligned with Go version: only support testnet-11)
         if self.testnet && self.net_suffix != 0 {
             if self.net_suffix != 11 {
-                return Err(KaseederError::InvalidConfigValue {
+                return Err(TondiSeederError::InvalidConfigValue {
                     field: "net_suffix".to_string(),
                     value: self.net_suffix.to_string(),
                     expected: "only testnet-11 (suffix 11) is supported".to_string(),
@@ -198,7 +198,7 @@ impl Config {
     /// Validate socket address format
     fn validate_socket_addr(&self, addr: &str, field: &str) -> Result<()> {
         addr.parse::<SocketAddr>()
-            .map_err(|_| KaseederError::InvalidConfigValue {
+            .map_err(|_| TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: addr.to_string(),
                 expected: "valid socket address (IP:port)".to_string(),
@@ -235,7 +235,7 @@ impl Config {
                 }
             }
 
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: addr.to_string(),
                 expected: "valid address format (IP:port or hostname:port)".to_string(),
@@ -254,7 +254,7 @@ impl Config {
                 return Ok(());
             }
 
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: addr.to_string(),
                 expected: "valid IP address or hostname".to_string(),
@@ -266,14 +266,14 @@ impl Config {
     fn validate_port(&self, port: &str, field: &str) -> Result<()> {
         let port_num: u16 = port
             .parse()
-            .map_err(|_| KaseederError::InvalidConfigValue {
+            .map_err(|_| TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: port.to_string(),
                 expected: "valid port number (1-65535)".to_string(),
             })?;
 
         if port_num == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: port.to_string(),
                 expected: "non-zero port number".to_string(),
@@ -287,14 +287,14 @@ impl Config {
     fn validate_profile_port(&self, port: &str, field: &str) -> Result<()> {
         let port_num: u16 = port
             .parse()
-            .map_err(|_| KaseederError::InvalidConfigValue {
+            .map_err(|_| TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: port.to_string(),
                 expected: "valid port number (1024-65535)".to_string(),
             })?;
 
         if port_num < 1024 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: field.to_string(),
                 value: port.to_string(),
                 expected: "port number between 1024 and 65535".to_string(),
@@ -308,7 +308,7 @@ impl Config {
     fn validate_log_level(&self, level: &str) -> Result<()> {
         let valid_levels = ["trace", "debug", "info", "warn", "error"];
         if !valid_levels.contains(&level.to_lowercase().as_str()) {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "log_level".to_string(),
                 value: level.to_string(),
                 expected: format!("one of: {}", valid_levels.join(", ")),
@@ -321,7 +321,7 @@ impl Config {
     fn validate_directory(&self, dir: &str) -> Result<()> {
         let path = Path::new(dir);
         if path.exists() && !path.is_dir() {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "app_dir".to_string(),
                 value: dir.to_string(),
                 expected: "valid directory path".to_string(),
@@ -352,7 +352,7 @@ impl Config {
                 .to_lowercase()
                 .as_str(),
         ) {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.rotation_strategy".to_string(),
                 value: self.advanced_logging.rotation_strategy.clone(),
                 expected: "one of: daily, hourly, size, hybrid".to_string(),
@@ -361,7 +361,7 @@ impl Config {
 
         // Validate rotation interval
         if self.advanced_logging.rotation_interval_hours == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.rotation_interval_hours".to_string(),
                 value: self.advanced_logging.rotation_interval_hours.to_string(),
                 expected: "positive number of hours".to_string(),
@@ -372,7 +372,7 @@ impl Config {
         if self.advanced_logging.compression_level < 1
             || self.advanced_logging.compression_level > 9
         {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.compression_level".to_string(),
                 value: self.advanced_logging.compression_level.to_string(),
                 expected: "number between 1 and 9".to_string(),
@@ -381,7 +381,7 @@ impl Config {
 
         // Validate buffer size
         if self.advanced_logging.buffer_size_bytes == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.buffer_size_bytes".to_string(),
                 value: self.advanced_logging.buffer_size_bytes.to_string(),
                 expected: "positive buffer size in bytes".to_string(),
@@ -390,7 +390,7 @@ impl Config {
 
         // Validate max file size
         if self.advanced_logging.max_file_size_mb == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.max_file_size_mb".to_string(),
                 value: self.advanced_logging.max_file_size_mb.to_string(),
                 expected: "positive file size in MB".to_string(),
@@ -399,7 +399,7 @@ impl Config {
 
         // Validate max rotated files
         if self.advanced_logging.max_rotated_files == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.max_rotated_files".to_string(),
                 value: self.advanced_logging.max_rotated_files.to_string(),
                 expected: "positive number of files".to_string(),
@@ -410,7 +410,7 @@ impl Config {
         if self.advanced_logging.enable_file_monitoring
             && self.advanced_logging.file_monitoring_interval == 0
         {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "advanced_logging.file_monitoring_interval".to_string(),
                 value: self.advanced_logging.file_monitoring_interval.to_string(),
                 expected: "positive interval in seconds".to_string(),
@@ -428,7 +428,7 @@ impl Config {
 
         // Validate monitoring interval
         if self.monitoring.interval_seconds == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "monitoring.interval_seconds".to_string(),
                 value: self.monitoring.interval_seconds.to_string(),
                 expected: "positive interval in seconds".to_string(),
@@ -437,7 +437,7 @@ impl Config {
 
         // Validate max history points
         if self.monitoring.max_history_points == 0 {
-            return Err(KaseederError::InvalidConfigValue {
+            return Err(TondiSeederError::InvalidConfigValue {
                 field: "monitoring.max_history_points".to_string(),
                 value: self.monitoring.max_history_points.to_string(),
                 expected: "positive number of history points".to_string(),
@@ -447,7 +447,7 @@ impl Config {
         // Validate HTTP metrics port if enabled
         if self.monitoring.http_metrics {
             if self.monitoring.http_metrics_port < 1024 {
-                return Err(KaseederError::InvalidConfigValue {
+                return Err(TondiSeederError::InvalidConfigValue {
                     field: "monitoring.http_metrics_port".to_string(),
                     value: self.monitoring.http_metrics_port.to_string(),
                     expected: "port number between 1024 and 65535".to_string(),
@@ -526,13 +526,13 @@ impl Config {
     /// Load configuration file
     fn load_config_file(path: &str) -> Result<ConfigFile> {
         if !Path::new(path).exists() {
-            return Err(KaseederError::FileNotFound(path.to_string()));
+            return Err(TondiSeederError::FileNotFound(path.to_string()));
         }
 
-        let content = fs::read_to_string(path).map_err(|e| KaseederError::Io(e))?;
+        let content = fs::read_to_string(path).map_err(|e| TondiSeederError::Io(e))?;
 
         let config: ConfigFile = toml::from_str(&content)
-            .map_err(|e| KaseederError::Serialization(format!("TOML parse error: {}", e)))?;
+            .map_err(|e| TondiSeederError::Serialization(format!("TOML parse error: {}", e)))?;
 
         Ok(config)
     }
@@ -630,7 +630,7 @@ impl Config {
         // Ensure the parent directory exists
         if let Some(parent) = config_path.parent() {
             if !parent.exists() {
-                fs::create_dir_all(parent).map_err(|e| KaseederError::Io(e))?;
+                fs::create_dir_all(parent).map_err(|e| TondiSeederError::Io(e))?;
             }
         }
 
@@ -656,10 +656,10 @@ impl Config {
         };
 
         let toml_content = toml::to_string_pretty(&config_file).map_err(|e| {
-            KaseederError::Serialization(format!("TOML serialization error: {}", e))
+            TondiSeederError::Serialization(format!("TOML serialization error: {}", e))
         })?;
 
-        fs::write(config_path, toml_content).map_err(|e| KaseederError::Io(e))?;
+        fs::write(config_path, toml_content).map_err(|e| TondiSeederError::Io(e))?;
 
         info!("Configuration saved to: {}", config_path.display());
         Ok(())
@@ -683,7 +683,7 @@ impl Config {
         for path in &default_paths {
             let expanded_path = if path.starts_with("~/") {
                 let home = dirs::home_dir().ok_or_else(|| {
-                    KaseederError::Config("Could not determine home directory".to_string())
+                    TondiSeederError::Config("Could not determine home directory".to_string())
                 })?;
                 home.join(&path[2..])
             } else {
@@ -692,7 +692,7 @@ impl Config {
 
             if expanded_path.exists() {
                 return Self::load_from_file(expanded_path.to_str().ok_or_else(|| {
-                    KaseederError::Config(format!(
+                    TondiSeederError::Config(format!(
                         "Invalid Unicode in config path: {:?}",
                         expanded_path
                     ))

@@ -280,7 +280,7 @@ impl StructuredLogger {
         let _max_size_bytes = max_size_mb * 1024 * 1024;
 
         let log_dir = log_path.parent().ok_or_else(|| {
-            crate::errors::KaseederError::Config(format!(
+            crate::errors::TondiSeederError::Config(format!(
                 "Invalid log path: {}",
                 log_path.display()
             ))

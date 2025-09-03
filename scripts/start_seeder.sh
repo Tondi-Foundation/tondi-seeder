@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Start Kaseeder DNS Seeder Script
+# Start TondiSeeder DNS Seeder Script
 # This script starts the Tondi DNS seeder with proper configuration
 
 set -e

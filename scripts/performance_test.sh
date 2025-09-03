@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Kaseeder Performance Test Script
+# TondiSeeder Performance Test Script
 # 测试优化后的节点发现性能
 
-echo "🚀 Kaseeder 性能测试开始..."
+echo "🚀 TondiSeeder 性能测试开始..."
 echo "=================================="
 
 # 检查tondi_seeder是否正在运行
 if ! pgrep -f "tondi_seeder" > /dev/null; then
-    echo "❌ Kaseeder 未运行，请先启动服务"
+    echo "❌ TondiSeeder 未运行，请先启动服务"
     exit 1
 fi
 
-echo "✅ Kaseeder 服务正在运行"
+echo "✅ TondiSeeder 服务正在运行"
 
 # 测试DNS查询性能
 echo ""

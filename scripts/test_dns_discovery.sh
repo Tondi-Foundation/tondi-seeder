@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Test DNS Discovery Script for Kaseeder
+# Test DNS Discovery Script for TondiSeeder
 # This script tests the DNS seed discovery functionality
 
 set -e
 
-echo "🧪 Testing DNS Seed Discovery for Kaseeder"
+echo "🧪 Testing DNS Seed Discovery for TondiSeeder"
 echo "=========================================="
 
 # Colors for output

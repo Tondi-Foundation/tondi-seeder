@@ -2,7 +2,7 @@ use thiserror::Error;
 
 /// Application error types
 #[derive(Error, Debug)]
-pub enum KaseederError {
+pub enum TondiSeederError {
     #[error("Configuration error: {0}")]
     Config(String),
 
@@ -84,100 +84,100 @@ pub enum KaseederError {
 }
 
 /// Result type for the application
-pub type Result<T> = std::result::Result<T, KaseederError>;
+pub type Result<T> = std::result::Result<T, TondiSeederError>;
 
-impl From<toml::de::Error> for KaseederError {
+impl From<toml::de::Error> for TondiSeederError {
     fn from(err: toml::de::Error) -> Self {
-        KaseederError::Serialization(format!("TOML deserialization error: {}", err))
+        TondiSeederError::Serialization(format!("TOML deserialization error: {}", err))
     }
 }
 
-impl From<toml::ser::Error> for KaseederError {
+impl From<toml::ser::Error> for TondiSeederError {
     fn from(err: toml::ser::Error) -> Self {
-        KaseederError::Serialization(format!("TOML serialization error: {}", err))
+        TondiSeederError::Serialization(format!("TOML serialization error: {}", err))
     }
 }
 
-impl From<serde_json::Error> for KaseederError {
+impl From<serde_json::Error> for TondiSeederError {
     fn from(err: serde_json::Error) -> Self {
-        KaseederError::Serialization(format!("JSON error: {}", err))
+        TondiSeederError::Serialization(format!("JSON error: {}", err))
     }
 }
 
-impl From<tonic::transport::Error> for KaseederError {
+impl From<tonic::transport::Error> for TondiSeederError {
     fn from(err: tonic::transport::Error) -> Self {
-        KaseederError::Grpc(format!("gRPC transport error: {}", err))
+        TondiSeederError::Grpc(format!("gRPC transport error: {}", err))
     }
 }
 
-impl From<tonic::Status> for KaseederError {
+impl From<tonic::Status> for TondiSeederError {
     fn from(err: tonic::Status) -> Self {
-        KaseederError::Grpc(format!("gRPC status error: {}", err))
+        TondiSeederError::Grpc(format!("gRPC status error: {}", err))
     }
 }
 
-impl From<std::net::AddrParseError> for KaseederError {
+impl From<std::net::AddrParseError> for TondiSeederError {
     fn from(err: std::net::AddrParseError) -> Self {
-        KaseederError::InvalidAddress(format!("Address parse error: {}", err))
+        TondiSeederError::InvalidAddress(format!("Address parse error: {}", err))
     }
 }
 
-impl From<std::num::ParseIntError> for KaseederError {
+impl From<std::num::ParseIntError> for TondiSeederError {
     fn from(err: std::num::ParseIntError) -> Self {
-        KaseederError::Validation(format!("Number parse error: {}", err))
+        TondiSeederError::Validation(format!("Number parse error: {}", err))
     }
 }
 
-impl From<uuid::Error> for KaseederError {
+impl From<uuid::Error> for TondiSeederError {
     fn from(err: uuid::Error) -> Self {
-        KaseederError::Validation(format!("UUID error: {}", err))
+        TondiSeederError::Validation(format!("UUID error: {}", err))
     }
 }
 
-impl From<chrono::ParseError> for KaseederError {
+impl From<chrono::ParseError> for TondiSeederError {
     fn from(err: chrono::ParseError) -> Self {
-        KaseederError::Validation(format!("Date/time parse error: {}", err))
+        TondiSeederError::Validation(format!("Date/time parse error: {}", err))
     }
 }
 
-impl From<sled::Error> for KaseederError {
+impl From<sled::Error> for TondiSeederError {
     fn from(err: sled::Error) -> Self {
-        KaseederError::Database(format!("Sled database error: {}", err))
+        TondiSeederError::Database(format!("Sled database error: {}", err))
     }
 }
 
-impl From<reqwest::Error> for KaseederError {
+impl From<reqwest::Error> for TondiSeederError {
     fn from(err: reqwest::Error) -> Self {
-        KaseederError::Network(format!("HTTP request error: {}", err))
+        TondiSeederError::Network(format!("HTTP request error: {}", err))
     }
 }
 
-impl From<tokio::time::error::Elapsed> for KaseederError {
+impl From<tokio::time::error::Elapsed> for TondiSeederError {
     fn from(_err: tokio::time::error::Elapsed) -> Self {
-        KaseederError::Timeout("Operation timed out".to_string())
+        TondiSeederError::Timeout("Operation timed out".to_string())
     }
 }
 
-impl From<tokio::sync::AcquireError> for KaseederError {
+impl From<tokio::sync::AcquireError> for TondiSeederError {
     fn from(err: tokio::sync::AcquireError) -> Self {
-        KaseederError::ResourceExhausted(format!("Failed to acquire semaphore: {}", err))
+        TondiSeederError::ResourceExhausted(format!("Failed to acquire semaphore: {}", err))
     }
 }
 
-impl From<trust_dns_proto::error::ProtoError> for KaseederError {
+impl From<trust_dns_proto::error::ProtoError> for TondiSeederError {
     fn from(err: trust_dns_proto::error::ProtoError) -> Self {
-        KaseederError::Protocol(format!("DNS protocol error: {}", err))
+        TondiSeederError::Protocol(format!("DNS protocol error: {}", err))
     }
 }
 
-impl From<tondi_p2p_lib::common::ProtocolError> for KaseederError {
+impl From<tondi_p2p_lib::common::ProtocolError> for TondiSeederError {
     fn from(err: tondi_p2p_lib::common::ProtocolError) -> Self {
-        KaseederError::Protocol(format!("Tondi protocol error: {}", err))
+        TondiSeederError::Protocol(format!("Tondi protocol error: {}", err))
     }
 }
 
-impl From<tracing_subscriber::filter::ParseError> for KaseederError {
+impl From<tracing_subscriber::filter::ParseError> for TondiSeederError {
     fn from(err: tracing_subscriber::filter::ParseError) -> Self {
-        KaseederError::Config(format!("Log level parse error: {}", err))
+        TondiSeederError::Config(format!("Log level parse error: {}", err))
     }
 }

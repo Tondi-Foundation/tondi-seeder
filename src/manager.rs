@@ -467,7 +467,7 @@ impl AddressManager {
         if let Some(parent_dir) = std::path::Path::new(&self.peers_file).parent() {
             if let Err(e) = std::fs::create_dir_all(parent_dir) {
                 error!("Failed to create directory {}: {}", parent_dir.display(), e);
-                return Err(crate::errors::KaseederError::Io(e));
+                return Err(crate::errors::TondiSeederError::Io(e));
             }
         }
 
@@ -482,18 +482,18 @@ impl AddressManager {
 
         // Check if we can write to the temporary file
         let serialized_nodes = serde_json::to_string(&nodes).map_err(|e| {
-            crate::errors::KaseederError::Serialization(format!("Failed to serialize nodes: {}", e))
+            crate::errors::TondiSeederError::Serialization(format!("Failed to serialize nodes: {}", e))
         })?;
 
         if let Err(e) = std::fs::write(&tmp_file, serialized_nodes) {
             error!("Failed to write temporary file {}: {}", tmp_file, e);
-            return Err(crate::errors::KaseederError::Io(e));
+            return Err(crate::errors::TondiSeederError::Io(e));
         }
 
         // Verify temporary file was created and has content
         if !std::path::Path::new(&tmp_file).exists() {
             error!("Temporary file {} was not created", tmp_file);
-            return Err(crate::errors::KaseederError::Config(
+            return Err(crate::errors::TondiSeederError::Config(
                 "Temporary file creation failed".to_string(),
             ));
         }
@@ -511,7 +511,7 @@ impl AddressManager {
                     tmp_file, cleanup_e
                 );
             }
-            return Err(crate::errors::KaseederError::Io(e));
+            return Err(crate::errors::TondiSeederError::Io(e));
         }
 
         Ok(())

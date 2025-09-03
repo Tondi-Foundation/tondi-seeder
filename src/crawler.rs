@@ -2,7 +2,7 @@ use crate::checkversion::VersionChecker;
 use crate::config::Config;
 use crate::constants::MAX_CONCURRENT_POLLS;
 use crate::dns_seed_discovery::DnsSeedDiscovery;
-use crate::errors::{KaseederError, Result};
+use crate::errors::{TondiSeederError, Result};
 use crate::manager::AddressManager;
 use crate::netadapter::DnsseedNetAdapter;
 use crate::types::NetAddress;
@@ -279,7 +279,7 @@ impl Crawler {
                         false,
                         Some(error_msg.clone()),
                     );
-                    return Err(KaseederError::Validation(format!(
+                    return Err(TondiSeederError::Validation(format!(
                         "Peer {} protocol version validation failed: {}",
                         peer_address, e
                     )));
@@ -296,7 +296,7 @@ impl Crawler {
                             false,
                             Some(error_msg.clone()),
                         );
-                        return Err(KaseederError::Validation(format!(
+                        return Err(TondiSeederError::Validation(format!(
                             "Peer {} user agent validation failed: {}",
                             peer_address, e
                         )));
@@ -341,7 +341,7 @@ impl Crawler {
 
                 debug!("❌ {} - {}: {}", classified_error, peer_address, error_msg);
 
-                Err(KaseederError::ConnectionFailed(format!(
+                Err(TondiSeederError::ConnectionFailed(format!(
                     "Could not connect to {}: {}",
                     peer_address, e
                 )))
